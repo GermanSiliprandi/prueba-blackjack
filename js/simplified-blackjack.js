@@ -1,66 +1,48 @@
 function blackjack() {
-	class decks {
-		constructor(cards) {
-			this.cards = cards;
+	async function playerAce() {
+		playerCard = 1;
+
+		if (playerCard == 1) {
+			betcheck = false;
+			hitcheck = true;
+			standCheck = true;
+			gameSpace.innerHTML = `<p>YOU GOT AN ACE. PLEASE SELECT A VALUE </p>`;
+			gameInfo.innerHTML = `<p>Please Select a Valid Value for the Ace. Valid Values are 1 or 11</p> <input type="number" id="aceText" placeholder="Please Enter Ace Value"> <br/> <br/> <button class="btn btn-primary" id="aceButton">ACE VALUE</button> <br/> <br/> `;
+			const aceText = document.getElementById("aceText"),
+				aceButton = document.getElementById("aceButton");
+			aceText.value = ``;
+			console.log(aceText);
+			playerPromise = new Promise(() => {
+				aceButton.addEventListener("click", askPlayerAce);
+			});
+			await playerPromise;
+		} else {
+			standCheck = false;
+			betcheck = true;
+			console.log(`Card No Ace= ${card}`);
 		}
-		/*This method selects a random card from the deck and checks if it's and Ace. If true, then asks the player for the value*/
-		giveCardCheckAce(acePlayerValue) {
-			let card = 1;
-			if (card == 1) {
-				/*aceValue = parseInt(
-					prompt(
-						"Please choose a value for the Ace. Valid values are 1 or 11"
-					)
-				);*/
-				acePlayerValue = false;
-				while (acePlayerValue == false) {
-					acePlayerValue = playerAce();
-				}
-				if (singleAceCheck == true) {
-					singleAceCheck = false;
-					return 11;
-				} else {
-					return 1;
-				}
-			} else {
-				return card;
-			}
-		}
-	}
-	function playerAce() {
-		gameSpace.innerHTML = `<p>YOU GOT AN ACE. PLEASE SELECT A VALUE </p>`;
-		gameInfo.innerHTML = `<p>Please Select a Valid Value for the Ace. Valid Values are 1 or 11</p> <input type="number" id="aceText" placeholder="Please Enter Ace Value"> <br/> <br/> <button class="btn btn-primary" id="aceButton">ACE VALUE</button> <br/> <br/> `;
-		const aceText = document.getElementById("aceText"),
-			aceButton = document.getElementById("aceButton");
-		aceText.value = ``;
-		console.log(aceText);
-		aceButton.addEventListener("click", askPlayerAce);
-		betcheck = false;
-		hitcheck = true;
-		standCheck = true;
 		function askPlayerAce() {
 			let aceValue = parseInt(aceText.value);
-			console.log(aceValue);
+			console.log(`The Ace Value is: ${aceValue}`);
 			if (aceValue == 11) {
 				singleAceCheck = true;
 				aceCheck = true;
 				gameInfo.innerHTML = ``;
 				gameSpace.innerHTML = `<p> <strong> YOUR CARD IS AN 11.</strong> Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
-				hitcheck = true;
 				standCheck = false;
 				betcheck = true;
-				return true;
+				playerCard = 11;
 			}
 			if (aceValue == 1) {
 				gameInfo.innerHTML = ``;
 				gameSpace.innerHTML = `<p> <strong> YOUR CARD IS AN 1.</strong> Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
-				hitcheck = true;
 				standCheck = false;
 				betcheck = true;
-				return true;
+				playerCard = 1;
 			}
 		}
 	}
+
 	/* This function  selects a random card from the 8 decks in the array cardsDecks and deletes the one selected*/
 	function randomCard() {
 		let i = Math.floor(Math.random() * cardsDecks.length);
@@ -132,6 +114,15 @@ function blackjack() {
 		}
 		return value;
 	}*/
+	function betContinue() {
+		console.log(`Player's First Card is: ${playerCard}`);
+		dealerCards.push(randomCard());
+		checkDealerFirstAce();
+		dealerCards.push(randomCard());
+		sumPlayer = playerCard;
+		sumDealerCards = sumDealer();
+		gameSpace.innerHTML = `Your first card is ${sumPlayer}. Dealer's First card is ${dealerCards[0]}. Your bet is $${betAmount}. Press the HIT ME button to get another card or press the STAND button to stand.`;
+	}
 
 	async function init() {
 		gameInfo.innerHTML = ``;
@@ -148,14 +139,10 @@ function blackjack() {
 				betcheck = true;
 				standCheck = false;
 				hitcheck = true;
-				playerCard = await deck1.giveCardCheckAce(playerAce());
-				console.log(`Player's First Card is: ${playerCard}`);
-				dealerCards.push(randomCard());
-				checkDealerFirstAce();
-				dealerCards.push(randomCard());
-				sumPlayer = playerCard;
-				sumDealerCards = sumDealer();
-				gameSpace.innerHTML = `Your first card is ${sumPlayer}. Dealer's First card is ${dealerCards[0]}. Your bet is $${betAmount}. Press the HIT ME button to get another card or press the STAND button to stand.`;
+				playerAce();
+				console.log(`
+				Player Card is: ${playerCard}`);
+				await playerPromise.then(betContinue());
 			} else {
 				gameSpace.innerHTML = `<p>Your Bet isn't correct. Please choose a number between 0 and ${money} </p>`;
 			}
@@ -167,51 +154,52 @@ function blackjack() {
 			gameSpace.innerHTML = `<p>You have already made your bet. Please press the HIT ME button or the STAND Button. Press RESET to start again or QUIT to exit.</p> <p>Your Card is ${playerCard}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}.</p> `;
 		}
 	}
-	function hitMe() {
+	async function hitMe() {
 		//The program asks for a card and then checks if the player has an Ace, and asks for a valid value of 1 or 11
 		gameInfo.innerHTML = ``;
 		if (betcheck == true) {
 			hitcheck = true;
-			playerCard = deck1.giveCardCheckAce(playerAce());
-			sumPlayer = sumPlayer + playerCard;
-			console.log(cardsDecks);
-
-			gameSpace.innerHTML = `<p>Your Card is ${playerCard}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
-			// If the player's sum of cards is higher than 21 and he/she doesn't have an Ace value of 11, then he/she looses
-			if (sumPlayer > 21 && aceCheck == false) {
-				money -= betAmount;
-				gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
-				totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
-				hitcheck = false;
-				standCheck = true;
-				betcheck = false;
-			}
-			//If the player's sum of cards is higher than 21 and he/she has an Ace with a value of 11, the program changes the Ace for a 1 by substracting 10 to the player's sum of cards
-			else if (sumPlayer > 21 && aceCheck == true) {
-				let prevSum;
-				prevSum = sumPlayer;
-				sumPlayer = sumPlayer - 10;
-
-				gameInfo.innerHTML = `<p>You 'Bust' with ${prevSum}. You change your Ace from an 11 to a 1. Your new number is ${sumPlayer}</p>`;
-				gameSpace.innerHTML = `<p>Your Card is ${playerCard}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
-				aceCheck = false;
-				//If the player's sum of cards is higher than 21, then he/she looses
-				if (sumPlayer > 21) {
-					money -= betAmount;
-					gameInfo = ``;
-					gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
-					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
-					hitcheck = false;
-					standCheck = true;
-					betcheck = false;
-				} else {
-				}
-			}
+			await playerPromise.then(hitMeContinue());
 		} else {
 			gameSpace.innerHTML = `<p>You first need to place a bet in the Bet field and then press the BET button.</p>`;
 		}
 	}
+	function hitMeContinue() {
+		sumPlayer = sumPlayer + playerCard;
+		console.log(cardsDecks);
 
+		gameSpace.innerHTML = `<p>Your Card is ${playerCard}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
+		// If the player's sum of cards is higher than 21 and he/she doesn't have an Ace value of 11, then he/she looses
+		if (sumPlayer > 21 && aceCheck == false) {
+			money -= betAmount;
+			gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
+			totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
+			hitcheck = false;
+			standCheck = true;
+			betcheck = false;
+		}
+		//If the player's sum of cards is higher than 21 and he/she has an Ace with a value of 11, the program changes the Ace for a 1 by substracting 10 to the player's sum of cards
+		else if (sumPlayer > 21 && aceCheck == true) {
+			let prevSum;
+			prevSum = sumPlayer;
+			sumPlayer = sumPlayer - 10;
+
+			gameInfo.innerHTML = `<p>You 'Bust' with ${prevSum}. You change your Ace from an 11 to a 1. Your new number is ${sumPlayer}</p>`;
+			gameSpace.innerHTML = `<p>Your Card is ${playerCard}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
+			aceCheck = false;
+			//If the player's sum of cards is higher than 21, then he/she looses
+			if (sumPlayer > 21) {
+				money -= betAmount;
+				gameInfo = ``;
+				gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
+				totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
+				hitcheck = false;
+				standCheck = true;
+				betcheck = false;
+			} else {
+			}
+		}
+	}
 	/*When the user "stands"*/
 	function stand() {
 		gameInfo.innerHTML = ``;
@@ -289,7 +277,6 @@ function blackjack() {
 		money = initialMoney;
 		totalMoney.innerHTML = `<p> Your Total Money is: $${initialMoney} </p>`;
 	}
-	const deck1 = new decks();
 	/* Start of Script*/
 	const totalMoney = document.getElementById("totalMoney"),
 		betText = document.getElementById("betText"),
@@ -331,9 +318,9 @@ function blackjack() {
 			8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
 		];
 	let hitcheck = false,
-		singleAceCheck = false,
 		standCheck = true,
 		betcheck = false,
+		playerPromise,
 		dealerAces = [],
 		dealerCards = [],
 		//playerCards = [], Esta variable son las cartas del jugador que tengo pensado implementar para la 3er entrega.
