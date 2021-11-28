@@ -241,8 +241,7 @@ function blackjack() {
 					gameSpace.innerHTML = `<p> CONGRATULATIONS YOU GOT BLACKJACK AND THE DEALER DIDN'T!!!!! YOU WIN!!!!!.  Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${blackjackWinings}. Now your total amount of money is $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				} else {
-					money -= betAmount;
-					gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. Both YOU and the DEALER got <strong>BLACKJACK</strong>. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
+					gameSpace.innerHTML = `<p> Both YOU and the DEALER got <strong>BLACKJACK</strong>. You don't lose any money. Your total amount of money continue being $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				}
 			} else {
