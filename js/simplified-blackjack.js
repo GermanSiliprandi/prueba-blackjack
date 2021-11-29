@@ -316,24 +316,18 @@ function blackjack() {
 
 	function rules() {
 		if (rulesText.innerHTML == ``) {
-			rulesText.innerHTML = `<p> Welcome to a game of simplified blackjack, where you can't split or double down. You play with 8 decks. </p> <p> The objective of the game is to get closer to 21 than the dealer. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`;
+			rulesText.innerHTML = `<p> Welcome to a game of simplified blackjack, where you can't split or double down. You play with 8 decks. </p> <p> The objective of the game is to get closer to 21 than the dealer. If you win the house pays 1:1. If you get an ACE and a 10 as your first 2 cards, you win 1.5*Bet. If both you and the dealer gets blackjack you don't lose any money. If the dealer gets blackjack and you don't, you lose your bet. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`;
 		} else {
 			rulesText.innerHTML = ``;
 		}
 	}
 
 	/* Start of Script*/
-	const totalMoney = document.getElementById("totalMoney"),
-		betText = document.getElementById("betText"),
-		betButton = document.getElementById("betButton"),
-		quitButton = document.getElementById("quitButton"),
-		resetButton = document.getElementById("resetButton"),
-		rulesButton = document.getElementById("rulesButton"),
-		rulesText = document.getElementById("rulesText"),
-		hitmeButton = document.getElementById("hitmeButton"),
-		standButton = document.getElementById("standButton"),
-		gameSpace = document.getElementById("gameSpace"),
-		gameInfo = document.getElementById("gameInfo"),
+	const totalMoney = $("#totalMoney")[0],
+		betText = $("#betText")[0],
+		rulesText = $("#rulesText")[0],
+		gameSpace = $("#gameSpace")[0],
+		gameInfo = $("#gameInfo")[0],
 		initialMoney = 10000,
 		newDecks = [
 			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8,
@@ -377,12 +371,12 @@ function blackjack() {
 		money = initialMoney,
 		sumDealerCards,
 		cardsDecks = newDecks;
-	betButton.addEventListener("click", init);
-	quitButton.addEventListener("click", quitFinal);
-	resetButton.addEventListener("click", reset);
-	rulesButton.addEventListener("click", rules);
-	hitmeButton.addEventListener("click", hitMe);
-	standButton.addEventListener("click", stand);
+	$(`#betButton`).click(init);
+	$(`#quitButton`).click(quitFinal);
+	$(`#resetButton`).click(reset);
+	$(`#rulesButton`).click(rules);
+	$(`#hitmeButton`).click(hitMe);
+	$(`#standButton`).click(stand);
 	betText.value = "";
 	rulesText.innerHTML = ``;
 	gameInfo.innerHTML = ``;
