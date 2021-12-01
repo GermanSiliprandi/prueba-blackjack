@@ -159,8 +159,16 @@ function blackjack() {
 				playerCards[playerAces[playerAces.length - 1]] = 1;
 				playerAces.pop();
 				sumPlayer = sumPlayerCards(playerCards);
-
-				gameInfo.innerHTML = `<p>You 'Bust' with ${prevSum}. You change your Ace from an 11 to a 1. Your new number is ${sumPlayer}</p>`;
+				$("#gameInfo")
+					.css({
+						display: "none",
+					})
+					.html(
+						`<p>You 'Bust' with ${prevSum}. You change your Ace from an 11 to a 1. Your new number is ${sumPlayer}</p>`
+					)
+					.fadeIn(800)
+					.delay(6000)
+					.fadeOut(1200);
 				gameSpace.innerHTML = `<p>Your Cards are ${playerCards}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
 
 				//If the player's sum of cards is higher than 21, then he/she looses
@@ -315,17 +323,12 @@ function blackjack() {
 	}
 
 	function rules() {
-		if (rulesText.innerHTML == ``) {
-			rulesText.innerHTML = `<p> Welcome to a game of simplified blackjack, where you can't split or double down. You play with 8 decks. </p> <p> The objective of the game is to get closer to 21 than the dealer. If you win the house pays 1:1. If you get an ACE and a 10 as your first 2 cards, you win 1.5*Bet. If both you and the dealer gets blackjack you don't lose any money. If the dealer gets blackjack and you don't, you lose your bet. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`;
-		} else {
-			rulesText.innerHTML = ``;
-		}
+		$("#rulesText").slideToggle();
 	}
 
 	/* Start of Script*/
 	const totalMoney = $("#totalMoney")[0],
 		betText = $("#betText")[0],
-		rulesText = $("#rulesText")[0],
 		gameSpace = $("#gameSpace")[0],
 		gameInfo = $("#gameInfo")[0],
 		initialMoney = 10000,
@@ -377,8 +380,15 @@ function blackjack() {
 	$(`#rulesButton`).click(rules);
 	$(`#hitmeButton`).click(hitMe);
 	$(`#standButton`).click(stand);
+
+	$("#rulesText")
+		.css({
+			display: "none",
+		})
+		.html(
+			`<p> Welcome to a game of simplified blackjack, where you can't split or double down. You play with 8 decks. </p> <p> The objective of the game is to get closer to 21 than the dealer. If you win the house pays 1:1. If you get an ACE and a 10 as your first 2 cards, you win 1.5*Bet. If both you and the dealer gets blackjack you don't lose any money. If the dealer gets blackjack and you don't, you lose your bet. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`
+		);
 	betText.value = "";
-	rulesText.innerHTML = ``;
 	gameInfo.innerHTML = ``;
 	totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 	gameSpace.innerHTML = `<p> The objective of the game is to get closer to 21 than the dealer. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`;
