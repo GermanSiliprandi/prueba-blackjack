@@ -1,4 +1,4 @@
-function blackjack() {
+function blackjack(_cardsImages) {
 	function randomCard() {
 		let i = Math.floor(Math.random() * cardsDecks.length);
 		card = cardsDecks[i];
@@ -370,6 +370,7 @@ function blackjack() {
 		sumPlayer = 0,
 		blackjack,
 		card,
+		cardsImages = _cardsImages,
 		betAmount = 0,
 		money = initialMoney,
 		sumDealerCards,
@@ -380,7 +381,6 @@ function blackjack() {
 	$(`#rulesButton`).click(rules);
 	$(`#hitmeButton`).click(hitMe);
 	$(`#standButton`).click(stand);
-
 	$("#rulesText")
 		.css({
 			display: "none",
@@ -392,5 +392,18 @@ function blackjack() {
 	gameInfo.innerHTML = ``;
 	totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 	gameSpace.innerHTML = `<p> The objective of the game is to get closer to 21 than the dealer. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`;
+	console.log(cardsImages);
 }
-blackjack();
+//First I need to get the data from the .json file and then call blackjack
+$.ajax({
+	type: "GET",
+	url: "json/cardsImages.json",
+	dataType: "json",
+	success: function (response) {
+		blackjack(response);
+		console.log("Data Retrieved");
+	},
+	error: function () {
+		console.log("Error loading Cards Images");
+	},
+});
