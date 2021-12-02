@@ -50,5 +50,6 @@
 	{ "id": "10spades", "url": "images/10spades.png" },
 	{ "id": "jspades", "url": "images/jspades.png" },
 	{ "id": "qspades", "url": "images/qspades.png" },
-	{ "id": "kspades", "url": "images/kspades.png" }
+	{ "id": "kspades", "url": "images/kspades.png" },
+	{ "id": "backCard", "url": "images/backCard.png" }
 ]
