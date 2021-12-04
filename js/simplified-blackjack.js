@@ -2,16 +2,26 @@ function blackjack(_cardsImages) {
 	function randomCard() {
 		let i = Math.floor(Math.random() * cardsDecks.length);
 		card = cardsDecks[i];
+		currentCardPosition = i;
 		if (i != 0 && i != cardsDecks.length) {
 			cardsDecks = cardsDecks
 				.slice(0, i)
 				.concat(cardsDecks.slice(i + 1, cardsDecks.length));
+			cardsImages = cardsImages
+				.slice(0, i)
+				.concat(cardsImages.slice(i + 1, cardsImages.length));
 		} else if (i == 0) {
 			cardsDecks = cardsDecks.slice(1, cardsDecks.length);
+			cardsImages = cardsImages.slice(1, cardsImages.length);
 		} else {
 			cardsDecks = cardsDecks.slice(0, cardsDecks.length - 1);
 		}
-		return card;
+		if (card <= 10) {
+			return card;
+		} else {
+			card = 10;
+			return card;
+		}
 	}
 	function checkBlackjack(cards) {
 		if (
@@ -70,6 +80,8 @@ function blackjack(_cardsImages) {
 		if (money > 0 && hitcheck == false) {
 			totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 			blackjack = false;
+			playerCardsImages = [];
+			dealerCardsImages = [];
 			dealerAces = [];
 			dealerCards = [];
 			playerCards = [];
@@ -99,13 +111,19 @@ function blackjack(_cardsImages) {
 
 	function betContinue(currentCard) {
 		playerCards.push(currentCard);
+		playerCardsImages.push(cardsImages[currentCardPosition]);
+		console.log(`Player Cards Images are: ${playerCardsImages}`);
 		if (currentCard == 11) {
 			playerAces.push(playerCards.length - 1);
 		}
 		console.log(playerAces);
 		dealerCards.push(randomCard());
+		dealerCardsImages.push(cardsImages[currentCardPosition]);
+		console.log(`Dealer Images are: ${dealerCardsImages}`);
 		checkDealerFirstAce();
 		dealerCards.push(randomCard());
+		dealerCardsImages.push(cardsImages[currentCardPosition]);
+		console.log(`Dealer Images are: ${dealerCardsImages}`);
 		sumPlayer = playerCards[0];
 		sumDealerCards = sumDealer();
 		gameSpace.innerHTML = `Your first card is ${sumPlayer}. Dealer's First card is ${dealerCards[0]}. Your bet is $${betAmount}. Press the HIT ME button to get another card or press the STAND button to stand.`;
@@ -132,6 +150,8 @@ function blackjack(_cardsImages) {
 
 	function hitMeContinue(currentCard) {
 		playerCards.push(currentCard);
+		playerCardsImages.push(cardsImages[currentCardPosition]);
+		console.log(`Player Cards Images are: ${playerCardsImages}`);
 		blackjack = checkBlackjack(playerCards);
 		if (blackjack == true) {
 			sumPlayer = sumPlayerCards(playerCards);
@@ -201,6 +221,8 @@ function blackjack(_cardsImages) {
 	}
 	function dealerCard() {
 		dealerCards.push(randomCard());
+		dealerCardsImages.push(cardsImages[currentCardPosition]);
+		console.log(`Dealer Images are: ${dealerCardsImages}`);
 		sumDealerCards = sumDealer();
 		if (
 			(dealerCards[dealerCards.length - 1] == 1 &&
@@ -302,6 +324,8 @@ function blackjack(_cardsImages) {
 		money = initialMoney;
 		totalMoney.innerHTML = `<p> Your Total Money is: $${initialMoney} </p>`;
 		gameSpace.innerHTML = `<p> You Start Again with $${money} to spend </p>`;
+		playerCardsImages = [];
+		dealerCardsImages = [];
 	}
 
 	function quitFinal() {
@@ -320,6 +344,8 @@ function blackjack(_cardsImages) {
 		}
 		money = 10000;
 		gameSpace.innerHTML = `<p> You Start Again with $${money} to spend </p>`;
+		playerCardsImages = [];
+		dealerCardsImages = [];
 	}
 
 	function rules() {
@@ -333,35 +359,34 @@ function blackjack(_cardsImages) {
 		gameInfo = $("#gameInfo")[0],
 		initialMoney = 10000,
 		newDecks = [
-			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8,
-			9, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3,
-			4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10,
-			10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6,
-			7, 8, 9, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1,
-			2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3,
-			4, 5, 6, 7, 8, 9, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10,
-			10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7,
-			8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1,
-			2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-			10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4,
-			5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10,
-			10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7,
-			8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1,
-			2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 1, 2, 3, 4,
-			5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10,
-			10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6,
-			7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 1,
-			2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3,
-			4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10,
-			10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7,
-			8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8,
+			9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2,
+			3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+			11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4,
+			5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+			12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6,
+			7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8,
+			9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2,
+			3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+			11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4,
+			5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+			12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6,
+			7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8,
+			9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2,
+			3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+			11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4,
+			5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+			12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6,
+			7, 8, 9, 10, 11, 12, 13,
 		];
 	let hitcheck = false,
 		standCheck = true,
 		betcheck = false,
+		currentCardPosition,
+		playerCardsImages = [],
+		dealerCardsImages = [],
 		dealerCards = [],
 		dealerAces = [],
 		playerCards = [],
@@ -393,6 +418,7 @@ function blackjack(_cardsImages) {
 	totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 	gameSpace.innerHTML = `<p> The objective of the game is to get closer to 21 than the dealer. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`;
 	console.log(cardsImages);
+	console.log(cardsDecks);
 }
 //First I need to get the data from the .json file and then call blackjack
 $.ajax({
