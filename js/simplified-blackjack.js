@@ -1,27 +1,18 @@
+//Main Function
 function blackjack(_cardsImages) {
+	//This Function selects a card from the deck and returns the number. It also saves the object in the variable card.
 	function randomCard() {
-		let i = Math.floor(Math.random() * cardsDecks.length);
+		let i = Math.floor(Math.random() * cardsDecks.length - 1);
+		cardNumber = parseInt(cardsDecks[i].number);
 		card = cardsDecks[i];
-		currentCardPosition = i;
-		if (i != 0 && i != cardsDecks.length) {
+		if (i != 0) {
 			cardsDecks = cardsDecks
 				.slice(0, i)
 				.concat(cardsDecks.slice(i + 1, cardsDecks.length));
-			cardsImages = cardsImages
-				.slice(0, i)
-				.concat(cardsImages.slice(i + 1, cardsImages.length));
-		} else if (i == 0) {
+		} else {
 			cardsDecks = cardsDecks.slice(1, cardsDecks.length);
-			cardsImages = cardsImages.slice(1, cardsImages.length);
-		} else {
-			cardsDecks = cardsDecks.slice(0, cardsDecks.length - 1);
 		}
-		if (card <= 10) {
-			return card;
-		} else {
-			card = 10;
-			return card;
-		}
+		return cardNumber;
 	}
 	function checkBlackjack(cards) {
 		if (
@@ -34,7 +25,7 @@ function blackjack(_cardsImages) {
 			return false;
 		}
 	}
-
+	//This function checks if the player has an Ace
 	function playerAce(currentCard, callback) {
 		if (currentCard == 1) {
 			betcheck = false;
@@ -53,6 +44,7 @@ function blackjack(_cardsImages) {
 			console.log(`Card No Ace= ${currentCard}`);
 			callback(currentCard);
 		}
+		//This function checks the value the player entered in the input when the aceButton is clicked
 		function askPlayerAce() {
 			let aceValue = parseInt(aceText.value);
 
@@ -74,19 +66,21 @@ function blackjack(_cardsImages) {
 			}
 		}
 	}
-
+	//This function starts the game when you click the BET button
 	function init() {
 		gameInfo.innerHTML = ``;
 		if (money > 0 && hitcheck == false) {
 			totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 			blackjack = false;
-			playerCardsImages = [];
-			dealerCardsImages = [];
+			playerCardsDiv.html(``);
+			dealerCardsDiv.html(``);
 			dealerAces = [];
 			dealerCards = [];
 			playerCards = [];
 			playerAces = [];
-			cardsDecks = newDecks;
+			playerObjects = [];
+			dealerObjects = [];
+			cardsDecks = cardsObject;
 			console.log(cardsDecks);
 			quit = true;
 			betAmount = parseFloat(betText.value);
@@ -108,37 +102,63 @@ function blackjack(_cardsImages) {
 			gameSpace.innerHTML = `<p>You have already made your bet. Please press the HIT ME button or the STAND Button. Press RESET to start again or QUIT to exit.</p> <p>Your Card is ${playerCard}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}.</p> `;
 		}
 	}
-
+	//first init checks the dealerAce function and then there is a callback to this function. This gives a card to the player and checks if an Ace has a value of 11, and push it in the playerAces variable. It also gives two cards to the dealer, checks if the dealer's first card is an Ace and manages the first images in the game.
 	function betContinue(currentCard) {
 		playerCards.push(currentCard);
-		playerCardsImages.push(cardsImages[currentCardPosition]);
-		console.log(`Player Cards Images are: ${playerCardsImages}`);
+		playerObjects.push(card);
+		console.log(playerObjects);
+		playerCardsDiv
+			.append(
+				`<img src="${
+					playerObjects[playerObjects.length - 1].url
+				}" alt="${playerObjects[playerObjects.length - 1].id}"></img>`
+			)
+			.hide()
+			.fadeIn(700);
 		if (currentCard == 11) {
 			playerAces.push(playerCards.length - 1);
 		}
 		console.log(playerAces);
 		dealerCards.push(randomCard());
-		dealerCardsImages.push(cardsImages[currentCardPosition]);
-		console.log(`Dealer Images are: ${dealerCardsImages}`);
+		dealerObjects.push(card);
+		dealerCardsDiv
+			.append(
+				`<img src="${
+					dealerObjects[dealerObjects.length - 1].url
+				}" alt="${dealerObjects[dealerObjects.length - 1].id}"></img>
+				<img src="${cardsDecks[cardsDecks.length - 1].url}" alt="${
+					cardsDecks[cardsDecks.length - 1].id
+				}"></img>`
+			)
+			.hide()
+			.fadeIn(700);
 		checkDealerFirstAce();
 		dealerCards.push(randomCard());
-		dealerCardsImages.push(cardsImages[currentCardPosition]);
-		console.log(`Dealer Images are: ${dealerCardsImages}`);
+		dealerObjects.push(card);
+		console.log(dealerObjects);
 		sumPlayer = playerCards[0];
 		sumDealerCards = sumDealer();
 		gameSpace.innerHTML = `Your first card is ${sumPlayer}. Dealer's First card is ${dealerCards[0]}. Your bet is $${betAmount}. Press the HIT ME button to get another card or press the STAND button to stand.`;
 	}
-
+	//This function sums the dealer's card numbers
 	function sumPlayerCards(playerCards) {
 		let cardsSum = 0;
-		for (card of playerCards) {
-			cardsSum += card;
+		for (cardNumber of playerCards) {
+			cardsSum += cardNumber;
 		}
 		return cardsSum;
 	}
-
+	//This function iterates on the objects inside the dealerObjects (cards objects), apend the images and hides them
+	function hideDealerCards() {
+		dealerCardsDiv.html(``);
+		for (objects of dealerObjects) {
+			dealerCardsDiv
+				.append(`<img src="${objects.url}" alt="${objects.id}"></img>`)
+				.hide();
+		}
+	}
+	//The function asks for a card and then checks if the player has an Ace, and asks for a valid value of 1 or 11
 	function hitMe() {
-		//The program asks for a card and then checks if the player has an Ace, and asks for a valid value of 1 or 11
 		gameInfo.innerHTML = ``;
 		if (betcheck == true) {
 			hitcheck = true;
@@ -147,11 +167,19 @@ function blackjack(_cardsImages) {
 			gameSpace.innerHTML = `<p>You first need to place a bet in the Bet field and then press the BET button.</p>`;
 		}
 	}
-
+	//Callback of the playerAce function. Checks if the player and the dealer got blackjack. shows the player cards. Checks if the player loses.
 	function hitMeContinue(currentCard) {
 		playerCards.push(currentCard);
-		playerCardsImages.push(cardsImages[currentCardPosition]);
-		console.log(`Player Cards Images are: ${playerCardsImages}`);
+		playerObjects.push(card);
+		console.log(playerObjects);
+		playerCardsDiv
+			.append(
+				`<img src="${
+					playerObjects[playerObjects.length - 1].url
+				}" alt="${playerObjects[playerObjects.length - 1].id}"></img>`
+			)
+			.hide()
+			.fadeIn(700);
 		blackjack = checkBlackjack(playerCards);
 		if (blackjack == true) {
 			sumPlayer = sumPlayerCards(playerCards);
@@ -166,6 +194,8 @@ function blackjack(_cardsImages) {
 			// If the player's sum of cards is higher than 21 and he/she doesn't have an Ace value of 11, then he/she looses
 			if (sumPlayer > 21 && playerAces.length < 1) {
 				money -= betAmount;
+				hideDealerCards();
+				dealerCardsDiv.fadeIn(300);
 				gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
 				totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				hitcheck = false;
@@ -195,6 +225,7 @@ function blackjack(_cardsImages) {
 				if (sumPlayer > 21) {
 					money -= betAmount;
 					gameInfo = ``;
+					dealerCardsDiv.fadeIn(300);
 					gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
 					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 					hitcheck = false;
@@ -205,24 +236,33 @@ function blackjack(_cardsImages) {
 			}
 		}
 	}
-
+	//sums the dealer's cards.
 	function sumDealer() {
 		let cardsSum = 0;
-		for (card of dealerCards) {
-			cardsSum += card;
+		for (cardNumber of dealerCards) {
+			cardsSum += cardNumber;
 		}
 		return cardsSum;
 	}
+	//checks if the dealer's first card is an Ace.
 	function checkDealerFirstAce() {
 		if (dealerCards[0] == 1) {
 			dealerCards[0] = 11;
 			dealerAces.push(0);
 		}
 	}
+	//gives card to the Dealer, saves the images, append the images in the dealerCardsDiv and hides them.
 	function dealerCard() {
 		dealerCards.push(randomCard());
-		dealerCardsImages.push(cardsImages[currentCardPosition]);
-		console.log(`Dealer Images are: ${dealerCardsImages}`);
+		dealerObjects.push(card);
+		dealerCardsDiv
+			.append(
+				`<img src="${
+					dealerObjects[dealerObjects.length - 1].url
+				}" alt="${dealerObjects[dealerObjects.length - 1].id}"></img>`
+			)
+			.hide();
+		console.log(dealerObjects);
 		sumDealerCards = sumDealer();
 		if (
 			(dealerCards[dealerCards.length - 1] == 1 &&
@@ -267,10 +307,13 @@ function blackjack(_cardsImages) {
 				if (blackjack == false) {
 					const blackjackWinings = 1.5 * betAmount;
 					money += blackjackWinings;
-
+					hideDealerCards();
+					dealerCardsDiv.fadeIn(300);
 					gameSpace.innerHTML = `<p> CONGRATULATIONS YOU GOT BLACKJACK AND THE DEALER DIDN'T!!!!! YOU WIN!!!!!.  Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${blackjackWinings}. Now your total amount of money is $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				} else {
+					hideDealerCards();
+					dealerCardsDiv.fadeIn(300);
 					gameSpace.innerHTML = `<p> Both YOU and the DEALER got <strong>BLACKJACK</strong>. You don't lose any money. Your total amount of money continue being $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				}
@@ -278,6 +321,8 @@ function blackjack(_cardsImages) {
 				blackjack = checkBlackjack(dealerCards);
 				if (blackjack == true) {
 					money -= betAmount;
+					hideDealerCards();
+					dealerCardsDiv.fadeIn(300);
 					gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :( . The Dealer got <strong> BLACKJACK </strong>. Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				} else {
@@ -301,12 +346,16 @@ function blackjack(_cardsImages) {
 					}
 					if (sumDealerCards > 21 || sumPlayer > sumDealerCards) {
 						money += betAmount;
+						hideDealerCards();
+						dealerCardsDiv.fadeIn(300);
 						gameSpace.innerHTML = `<p> CONGRATULATIONS!!!!! YOU WIN!!!!!. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${betAmount}. Now your total amount of money is $${money} </p>`;
 						totalMoney.innerHTML = `Your Total Money is: $${money}`;
 					}
 					// else, the player looses
 					else {
 						money -= betAmount;
+						hideDealerCards();
+						dealerCardsDiv.fadeIn(300);
 						gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
 						totalMoney.innerHTML = `Your Total Money is: $${money}`;
 					}
@@ -316,22 +365,24 @@ function blackjack(_cardsImages) {
 			gameSpace.innerHTML = `<p> Please Press the BET button to start again. Press the QUIT button to save your Higscore and reset. Press RESET to reset your money.</p>`;
 		}
 	}
-
+	//When the player reset the game
 	function reset() {
 		hitcheck = false;
 		standCheck = true;
 		betcheck = false;
 		money = initialMoney;
+		playerCardsDiv.fadeOut(400);
+		dealerCardsDiv.fadeOut(400);
 		totalMoney.innerHTML = `<p> Your Total Money is: $${initialMoney} </p>`;
 		gameSpace.innerHTML = `<p> You Start Again with $${money} to spend </p>`;
-		playerCardsImages = [];
-		dealerCardsImages = [];
 	}
-
+	//when the player quits, it saves it's highscore (if any)
 	function quitFinal() {
 		hitcheck = false;
 		standCheck = true;
 		betcheck = false;
+		playerCardsDiv.fadeOut(400);
+		dealerCardsDiv.fadeOut(400);
 		totalMoney.innerHTML = `<p> Your final money is $${money}. You started with $${initialMoney}. Thanks for playing :D. Have a nice day </p>`;
 		if (isNaN(parseFloat(localStorage.getItem(`score`))) === true) {
 			localStorage.setItem(`score`, money);
@@ -344,10 +395,8 @@ function blackjack(_cardsImages) {
 		}
 		money = 10000;
 		gameSpace.innerHTML = `<p> You Start Again with $${money} to spend </p>`;
-		playerCardsImages = [];
-		dealerCardsImages = [];
 	}
-
+	//Shows the rules when the RULES button is pressed.
 	function rules() {
 		$("#rulesText").slideToggle();
 	}
@@ -357,36 +406,13 @@ function blackjack(_cardsImages) {
 		betText = $("#betText")[0],
 		gameSpace = $("#gameSpace")[0],
 		gameInfo = $("#gameInfo")[0],
+		playerCardsDiv = $(`#playerCardsDiv`),
+		dealerCardsDiv = $("#dealerCardsDiv"),
 		initialMoney = 10000,
-		newDecks = [
-			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8,
-			9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2,
-			3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-			11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4,
-			5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-			12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6,
-			7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8,
-			9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2,
-			3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-			11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4,
-			5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-			12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6,
-			7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8,
-			9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2,
-			3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-			11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4,
-			5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-			12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6,
-			7, 8, 9, 10, 11, 12, 13,
-		];
+		cardsObject = _cardsImages;
 	let hitcheck = false,
 		standCheck = true,
 		betcheck = false,
-		currentCardPosition,
-		playerCardsImages = [],
-		dealerCardsImages = [],
 		dealerCards = [],
 		dealerAces = [],
 		playerCards = [],
@@ -395,11 +421,13 @@ function blackjack(_cardsImages) {
 		sumPlayer = 0,
 		blackjack,
 		card,
-		cardsImages = _cardsImages,
+		cardNumber,
 		betAmount = 0,
 		money = initialMoney,
 		sumDealerCards,
-		cardsDecks = newDecks;
+		playerObjects = [],
+		dealerObjects = [],
+		cardsDecks = cardsObject;
 	$(`#betButton`).click(init);
 	$(`#quitButton`).click(quitFinal);
 	$(`#resetButton`).click(reset);
@@ -417,7 +445,6 @@ function blackjack(_cardsImages) {
 	gameInfo.innerHTML = ``;
 	totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 	gameSpace.innerHTML = `<p> The objective of the game is to get closer to 21 than the dealer. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`;
-	console.log(cardsImages);
 	console.log(cardsDecks);
 }
 //First I need to get the data from the .json file and then call blackjack
