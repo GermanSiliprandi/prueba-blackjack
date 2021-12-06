@@ -114,6 +114,7 @@ function blackjack(_cardsImages) {
 				}" alt="${playerObjects[playerObjects.length - 1].id}"></img>`
 			)
 			.hide()
+			.delay(300)
 			.fadeIn(700);
 		if (currentCard == 11) {
 			playerAces.push(playerCards.length - 1);
@@ -131,6 +132,7 @@ function blackjack(_cardsImages) {
 				}"></img>`
 			)
 			.hide()
+			.delay(300)
 			.fadeIn(700);
 		checkDealerFirstAce();
 		dealerCards.push(randomCard());
@@ -195,7 +197,7 @@ function blackjack(_cardsImages) {
 			if (sumPlayer > 21 && playerAces.length < 1) {
 				money -= betAmount;
 				hideDealerCards();
-				dealerCardsDiv.fadeIn(300);
+				dealerCardsDiv.delay(300).fadeIn(300);
 				gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
 				totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				hitcheck = false;
@@ -225,7 +227,7 @@ function blackjack(_cardsImages) {
 				if (sumPlayer > 21) {
 					money -= betAmount;
 					gameInfo = ``;
-					dealerCardsDiv.fadeIn(300);
+					dealerCardsDiv.delay(300).fadeIn(300);
 					gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
 					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 					hitcheck = false;
@@ -308,12 +310,12 @@ function blackjack(_cardsImages) {
 					const blackjackWinings = 1.5 * betAmount;
 					money += blackjackWinings;
 					hideDealerCards();
-					dealerCardsDiv.fadeIn(300);
+					dealerCardsDiv.delay(300).fadeIn(300);
 					gameSpace.innerHTML = `<p> CONGRATULATIONS YOU GOT BLACKJACK AND THE DEALER DIDN'T!!!!! YOU WIN!!!!!.  Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${blackjackWinings}. Now your total amount of money is $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				} else {
 					hideDealerCards();
-					dealerCardsDiv.fadeIn(300);
+					dealerCardsDiv.delay(300).fadeIn(300);
 					gameSpace.innerHTML = `<p> Both YOU and the DEALER got <strong>BLACKJACK</strong>. You don't lose any money. Your total amount of money continue being $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				}
@@ -322,7 +324,7 @@ function blackjack(_cardsImages) {
 				if (blackjack == true) {
 					money -= betAmount;
 					hideDealerCards();
-					dealerCardsDiv.fadeIn(300);
+					dealerCardsDiv.delay(300).fadeIn(300);
 					gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :( . The Dealer got <strong> BLACKJACK </strong>. Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				} else {
@@ -347,7 +349,7 @@ function blackjack(_cardsImages) {
 					if (sumDealerCards > 21 || sumPlayer > sumDealerCards) {
 						money += betAmount;
 						hideDealerCards();
-						dealerCardsDiv.fadeIn(300);
+						dealerCardsDiv.delay(300).fadeIn(300);
 						gameSpace.innerHTML = `<p> CONGRATULATIONS!!!!! YOU WIN!!!!!. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${betAmount}. Now your total amount of money is $${money} </p>`;
 						totalMoney.innerHTML = `Your Total Money is: $${money}`;
 					}
@@ -355,7 +357,7 @@ function blackjack(_cardsImages) {
 					else {
 						money -= betAmount;
 						hideDealerCards();
-						dealerCardsDiv.fadeIn(300);
+						dealerCardsDiv.delay(300).fadeIn(300);
 						gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
 						totalMoney.innerHTML = `Your Total Money is: $${money}`;
 					}
