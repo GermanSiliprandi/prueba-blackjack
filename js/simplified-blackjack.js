@@ -89,8 +89,7 @@ function blackjack(_cardsImages) {
 				standCheck = false;
 				hitcheck = true;
 				playerAce(randomCard(), betContinue);
-				console.log(`
-				Player Card is: ${playerCard}`);
+				playerAce(randomCard(), betContinue);
 			} else {
 				gameSpace.innerHTML = `<p>Your Bet isn't correct. Please choose a number between 0 and ${money} </p>`;
 			}
@@ -114,33 +113,50 @@ function blackjack(_cardsImages) {
 				}" alt="${playerObjects[playerObjects.length - 1].id}"></img>`
 			)
 			.hide()
-			.delay(300)
+			.delay(500)
 			.fadeIn(700);
 		if (currentCard == 11) {
 			playerAces.push(playerCards.length - 1);
 		}
 		console.log(playerAces);
-		dealerCards.push(randomCard());
-		dealerObjects.push(card);
-		dealerCardsDiv
-			.append(
-				`<img src="${
-					dealerObjects[dealerObjects.length - 1].url
-				}" alt="${dealerObjects[dealerObjects.length - 1].id}"></img>
-				<img src="${cardsDecks[cardsDecks.length - 1].url}" alt="${
-					cardsDecks[cardsDecks.length - 1].id
-				}"></img>`
-			)
-			.hide()
-			.delay(300)
-			.fadeIn(700);
-		checkDealerFirstAce();
-		dealerCards.push(randomCard());
-		dealerObjects.push(card);
-		console.log(dealerObjects);
-		sumPlayer = playerCards[0];
-		sumDealerCards = sumDealer();
-		gameSpace.innerHTML = `Your first card is ${sumPlayer}. Dealer's First card is ${dealerCards[0]}. Your bet is $${betAmount}. Press the HIT ME button to get another card or press the STAND button to stand.`;
+		if (playerCards.length == 1) {
+			dealerCards.push(randomCard());
+			dealerObjects.push(card);
+			checkDealerFirstAce();
+			dealerCardsDiv
+				.append(
+					`<img src="${
+						dealerObjects[dealerObjects.length - 1].url
+					}" alt="${
+						dealerObjects[dealerObjects.length - 1].id
+					}"></img>`
+				)
+				.hide()
+				.delay(500)
+				.fadeIn(700);
+		} else {
+			dealerCards.push(randomCard());
+			dealerObjects.push(card);
+			dealerCardsDiv
+				.append(
+					`<img src="${cardsDecks[cardsDecks.length - 1].url}" alt="${
+						cardsDecks[cardsDecks.length - 1].id
+					}"></img>`
+				)
+				.hide()
+				.delay(500)
+				.fadeIn(700);
+			console.log(dealerObjects);
+			sumPlayer = sumPlayerCards(playerCards);
+			sumDealerCards = sumDealer();
+			blackjack = checkBlackjack(playerCards);
+			if (blackjack == true) {
+				sumPlayer = sumPlayerCards(playerCards);
+				stand();
+			} else {
+				gameSpace.innerHTML = `<p> Your Cards are ${playerCards}. Dealer's first card is ${dealerCards[0]}. Your bet is $${betAmount}. Press the HIT ME button to get another card or press the STAND button to stand.</p>`;
+			}
+		}
 	}
 	//This function sums the dealer's card numbers
 	function sumPlayerCards(playerCards) {
@@ -182,59 +198,53 @@ function blackjack(_cardsImages) {
 			)
 			.hide()
 			.fadeIn(700);
-		blackjack = checkBlackjack(playerCards);
-		if (blackjack == true) {
+		if (currentCard == 11) {
+			playerAces.push(playerCards.length - 1);
+		}
+		sumPlayer = sumPlayerCards(playerCards);
+		console.log(playerCards);
+		gameSpace.innerHTML = `<p>Your Cards are ${playerCards}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
+		// If the player's sum of cards is higher than 21 and he/she doesn't have an Ace value of 11, then he/she looses
+		if (sumPlayer > 21 && playerAces.length < 1) {
+			money -= betAmount;
+			hideDealerCards();
+			dealerCardsDiv.delay(500).fadeIn(300);
+			gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
+			totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
+			hitcheck = false;
+			standCheck = true;
+			betcheck = false;
+		}
+		//If the player's sum of cards is higher than 21 and he/she has an Ace with a value of 11, the program changes the Ace for a 1 by substracting 10 to the player's sum of cards
+		else if (sumPlayer > 21 && playerAces.length >= 1) {
+			let prevSum;
+			prevSum = sumPlayer;
+			playerCards[playerAces[playerAces.length - 1]] = 1;
+			playerAces.pop();
 			sumPlayer = sumPlayerCards(playerCards);
-			stand();
-		} else {
-			if (currentCard == 11) {
-				playerAces.push(playerCards.length - 1);
-			}
-			sumPlayer = sumPlayerCards(playerCards);
-			console.log(playerCards);
+			$("#gameInfo")
+				.css({
+					display: "none",
+				})
+				.html(
+					`<p>You 'Bust' with ${prevSum}. You change your Ace from an 11 to a 1. Your new number is ${sumPlayer}</p>`
+				)
+				.fadeIn(800)
+				.delay(6000)
+				.fadeOut(1200);
 			gameSpace.innerHTML = `<p>Your Cards are ${playerCards}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
-			// If the player's sum of cards is higher than 21 and he/she doesn't have an Ace value of 11, then he/she looses
-			if (sumPlayer > 21 && playerAces.length < 1) {
+
+			//If the player's sum of cards is higher than 21, then he/she looses
+			if (sumPlayer > 21) {
 				money -= betAmount;
-				hideDealerCards();
-				dealerCardsDiv.delay(300).fadeIn(300);
-				gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
+				gameInfo = ``;
+				dealerCardsDiv.delay(500).fadeIn(300);
+				gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
 				totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				hitcheck = false;
 				standCheck = true;
 				betcheck = false;
-			}
-			//If the player's sum of cards is higher than 21 and he/she has an Ace with a value of 11, the program changes the Ace for a 1 by substracting 10 to the player's sum of cards
-			else if (sumPlayer > 21 && playerAces.length >= 1) {
-				let prevSum;
-				prevSum = sumPlayer;
-				playerCards[playerAces[playerAces.length - 1]] = 1;
-				playerAces.pop();
-				sumPlayer = sumPlayerCards(playerCards);
-				$("#gameInfo")
-					.css({
-						display: "none",
-					})
-					.html(
-						`<p>You 'Bust' with ${prevSum}. You change your Ace from an 11 to a 1. Your new number is ${sumPlayer}</p>`
-					)
-					.fadeIn(800)
-					.delay(6000)
-					.fadeOut(1200);
-				gameSpace.innerHTML = `<p>Your Cards are ${playerCards}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
-
-				//If the player's sum of cards is higher than 21, then he/she looses
-				if (sumPlayer > 21) {
-					money -= betAmount;
-					gameInfo = ``;
-					dealerCardsDiv.delay(300).fadeIn(300);
-					gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
-					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
-					hitcheck = false;
-					standCheck = true;
-					betcheck = false;
-				} else {
-				}
+			} else {
 			}
 		}
 	}
@@ -310,12 +320,12 @@ function blackjack(_cardsImages) {
 					const blackjackWinings = 1.5 * betAmount;
 					money += blackjackWinings;
 					hideDealerCards();
-					dealerCardsDiv.delay(300).fadeIn(300);
+					dealerCardsDiv.delay(500).fadeIn(300);
 					gameSpace.innerHTML = `<p> CONGRATULATIONS YOU GOT BLACKJACK AND THE DEALER DIDN'T!!!!! YOU WIN!!!!!.  Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${blackjackWinings}. Now your total amount of money is $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				} else {
 					hideDealerCards();
-					dealerCardsDiv.delay(300).fadeIn(300);
+					dealerCardsDiv.delay(500).fadeIn(300);
 					gameSpace.innerHTML = `<p> Both YOU and the DEALER got <strong>BLACKJACK</strong>. You don't lose any money. Your total amount of money continue being $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				}
@@ -324,7 +334,7 @@ function blackjack(_cardsImages) {
 				if (blackjack == true) {
 					money -= betAmount;
 					hideDealerCards();
-					dealerCardsDiv.delay(300).fadeIn(300);
+					dealerCardsDiv.delay(500).fadeIn(300);
 					gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :( . The Dealer got <strong> BLACKJACK </strong>. Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
 					totalMoney.innerHTML = `Your Total Money is: $${money}`;
 				} else {
@@ -349,7 +359,7 @@ function blackjack(_cardsImages) {
 					if (sumDealerCards > 21 || sumPlayer > sumDealerCards) {
 						money += betAmount;
 						hideDealerCards();
-						dealerCardsDiv.delay(300).fadeIn(300);
+						dealerCardsDiv.delay(500).fadeIn(300);
 						gameSpace.innerHTML = `<p> CONGRATULATIONS!!!!! YOU WIN!!!!!. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${betAmount}. Now your total amount of money is $${money} </p>`;
 						totalMoney.innerHTML = `Your Total Money is: $${money}`;
 					}
@@ -357,7 +367,7 @@ function blackjack(_cardsImages) {
 					else {
 						money -= betAmount;
 						hideDealerCards();
-						dealerCardsDiv.delay(300).fadeIn(300);
+						dealerCardsDiv.delay(500).fadeIn(300);
 						gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
 						totalMoney.innerHTML = `Your Total Money is: $${money}`;
 					}
