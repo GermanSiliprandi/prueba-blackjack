@@ -2,7 +2,7 @@
 function blackjack(_cardsImages) {
 	//This Function selects a card from the deck and returns the number. It also saves the object in the variable card.
 	function randomCard() {
-		let i = Math.floor(Math.random() * cardsDecks.length - 1);
+		let i = Math.floor(Math.random() * (cardsDecks.length - 1));
 		cardNumber = parseInt(cardsDecks[i].number);
 		card = cardsDecks[i];
 		if (i != 0) {
@@ -119,7 +119,7 @@ function blackjack(_cardsImages) {
 			playerAces.push(playerCards.length - 1);
 		}
 		console.log(playerAces);
-		if (playerCards.length == 1) {
+		if (playerCards.length <= 1) {
 			dealerCards.push(randomCard());
 			dealerObjects.push(card);
 			checkDealerFirstAce();
