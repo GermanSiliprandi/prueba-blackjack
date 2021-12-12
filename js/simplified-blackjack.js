@@ -27,7 +27,14 @@ function blackjack(_cardsImages) {
 	}
 	//This function checks if the player has an Ace
 	function playerAce(currentCard, callback) {
+		console.log(`Inside playerAce player Card is`);
+		console.log(card);
 		if (currentCard == 1) {
+			$(`#standButton`).prop("disabled", true);
+			$(`#betButton`).prop("disabled", true);
+			$(`#quitButton`).prop("disabled", true);
+			$(`#resetButton`).prop("disabled", true);
+			$(`#hitmeButton`).prop("disabled", true);
 			betcheck = false;
 			hitcheck = true;
 			standCheck = true;
@@ -36,28 +43,32 @@ function blackjack(_cardsImages) {
 			const aceText = document.getElementById("aceText"),
 				aceButton = document.getElementById("aceButton");
 			aceText.value = ``;
-			console.log(aceText);
+			console.log("inside Player Ace playerObjects are");
+			console.log(playerObjects);
 			aceButton.addEventListener("click", askPlayerAce);
 		} else {
 			standCheck = false;
 			betcheck = true;
 			console.log(`Card No Ace= ${currentCard}`);
+			console.log("inside Player Ace playerObjects are");
+			console.log(playerObjects);
 			callback(currentCard);
 		}
 		//This function checks the value the player entered in the input when the aceButton is clicked
 		function askPlayerAce() {
+			console.log(`Inside askPlayerAce player Card is`);
+			console.log(card);
 			let aceValue = parseInt(aceText.value);
-
 			console.log(`The Ace Value is: ${aceValue}`);
 			if (aceValue == 11) {
 				gameInfo.innerHTML = ``;
-				gameSpace.innerHTML = `<p> <strong> YOUR CARD IS AN 11.</strong> Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
+				gameSpace.innerHTML = `<p> <strong> YOUR CARD IS AN 11.</strong> </p> <p> Please press the HIT ME button to give you a card.</p> <p> Press the STAND button to 'stand'.</p> <p> Press the QUIT button to quit.</p>`;
 				standCheck = false;
 				betcheck = true;
 				callback(11);
 			} else if (aceValue == 1) {
 				gameInfo.innerHTML = ``;
-				gameSpace.innerHTML = `<p> <strong> YOUR CARD IS AN 1.</strong> Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
+				gameSpace.innerHTML = `<p> <strong> YOUR CARD IS AN 1.</strong> </p> <p> Please press the HIT ME button to give you a card.</p> <p> Press the STAND button to 'stand'.</p> <p> Press the QUIT button to quit.</p>`;
 				standCheck = false;
 				betcheck = true;
 				callback(1);
@@ -74,21 +85,19 @@ function blackjack(_cardsImages) {
 			blackjack = false;
 			playerCardsDiv.html(``);
 			dealerCardsDiv.html(``);
+			cardsDecks = cardsObject;
 			dealerAces = [];
 			dealerCards = [];
 			playerCards = [];
 			playerAces = [];
 			playerObjects = [];
 			dealerObjects = [];
-			cardsDecks = cardsObject;
 			console.log(cardsDecks);
-			quit = true;
 			betAmount = parseFloat(betText.value);
 			if (betAmount <= money && betAmount > 0) {
 				betcheck = true;
 				standCheck = false;
 				hitcheck = true;
-				playerAce(randomCard(), betContinue);
 				playerAce(randomCard(), betContinue);
 			} else {
 				gameSpace.innerHTML = `<p>Your Bet isn't correct. Please choose a number between 0 and ${money} </p>`;
@@ -98,13 +107,21 @@ function blackjack(_cardsImages) {
 			hitcheck = false;
 			standCheck = true;
 		} else if (hitcheck == true) {
-			gameSpace.innerHTML = `<p>You have already made your bet. Please press the HIT ME button or the STAND Button. Press RESET to start again or QUIT to exit.</p> <p>Your Card is ${playerCard}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}.</p> `;
+			gameSpace.innerHTML = `<p>You have already made your bet. Please press the HIT ME button or the STAND Button.</p> <p> Press RESET to start again or QUIT to exit.</p> <p>Your Card is ${playerCard}. You Have ${sumPlayer}.</p> <p> Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}.</p> `;
 		}
 	}
 	//first init checks the dealerAce function and then there is a callback to this function. This gives a card to the player and checks if an Ace has a value of 11, and push it in the playerAces variable. It also gives two cards to the dealer, checks if the dealer's first card is an Ace and manages the first images in the game.
 	function betContinue(currentCard) {
+		$(`#standButton`).prop("disabled", false);
+		$(`#betButton`).prop("disabled", false);
+		$(`#quitButton`).prop("disabled", false);
+		$(`#resetButton`).prop("disabled", false);
+		$(`#hitmeButton`).prop("disabled", false);
+		console.log(`Inside betContinue player Card is`);
+		console.log(card);
 		playerCards.push(currentCard);
 		playerObjects.push(card);
+		console.log("inside Bet Continue playerObjects are");
 		console.log(playerObjects);
 		playerCardsDiv
 			.append(
@@ -119,44 +136,35 @@ function blackjack(_cardsImages) {
 			playerAces.push(playerCards.length - 1);
 		}
 		console.log(playerAces);
-		if (playerCards.length <= 1) {
-			dealerCards.push(randomCard());
-			dealerObjects.push(card);
-			checkDealerFirstAce();
-			dealerCardsDiv
-				.append(
-					`<img src="${
-						dealerObjects[dealerObjects.length - 1].url
-					}" alt="${
-						dealerObjects[dealerObjects.length - 1].id
-					}"></img>`
-				)
-				.hide()
-				.delay(500)
-				.fadeIn(700);
-		} else {
-			dealerCards.push(randomCard());
-			dealerObjects.push(card);
-			dealerCardsDiv
-				.append(
-					`<img src="${cardsDecks[cardsDecks.length - 1].url}" alt="${
-						cardsDecks[cardsDecks.length - 1].id
-					}"></img>`
-				)
-				.hide()
-				.delay(500)
-				.fadeIn(700);
-			console.log(dealerObjects);
-			sumPlayer = sumPlayerCards(playerCards);
-			sumDealerCards = sumDealer();
-			blackjack = checkBlackjack(playerCards);
-			if (blackjack == true) {
-				sumPlayer = sumPlayerCards(playerCards);
-				stand();
-			} else {
-				gameSpace.innerHTML = `<p> Your Cards are ${playerCards}. Dealer's first card is ${dealerCards[0]}. Your bet is $${betAmount}. Press the HIT ME button to get another card or press the STAND button to stand.</p>`;
-			}
-		}
+
+		dealerCards.push(randomCard());
+		dealerObjects.push(card);
+		checkDealerFirstAce();
+		dealerCardsDiv
+			.append(
+				`<img src="${
+					dealerObjects[dealerObjects.length - 1].url
+				}" alt="${dealerObjects[dealerObjects.length - 1].id}"></img>`
+			)
+			.hide()
+			.delay(500)
+			.fadeIn(700);
+
+		dealerCards.push(randomCard());
+		dealerObjects.push(card);
+		dealerCardsDiv
+			.append(
+				`<img src="${cardsDecks[cardsDecks.length - 1].url}" alt="${
+					cardsDecks[cardsDecks.length - 1].id
+				}"></img>`
+			)
+			.hide()
+			.delay(500)
+			.fadeIn(700);
+		console.log(dealerObjects);
+		sumPlayer = sumPlayerCards(playerCards);
+		sumDealerCards = sumDealer();
+		gameSpace.innerHTML = `<p> Your Cards are ${playerCards}. Dealer's first card is ${dealerCards[0]}. </p> <p> Your bet is $${betAmount}.</p> <p> Press the HIT ME button to get another card or press the STAND button to stand.</p>`;
 	}
 	//This function sums the dealer's card numbers
 	function sumPlayerCards(playerCards) {
@@ -187,9 +195,13 @@ function blackjack(_cardsImages) {
 	}
 	//Callback of the playerAce function. Checks if the player and the dealer got blackjack. shows the player cards. Checks if the player loses.
 	function hitMeContinue(currentCard) {
+		$(`#standButton`).prop("disabled", false);
+		$(`#betButton`).prop("disabled", false);
+		$(`#quitButton`).prop("disabled", false);
+		$(`#resetButton`).prop("disabled", false);
+		$(`#hitmeButton`).prop("disabled", false);
 		playerCards.push(currentCard);
 		playerObjects.push(card);
-		console.log(playerObjects);
 		playerCardsDiv
 			.append(
 				`<img src="${
@@ -201,6 +213,14 @@ function blackjack(_cardsImages) {
 		if (currentCard == 11) {
 			playerAces.push(playerCards.length - 1);
 		}
+		if (playerObjects.length == 2) {
+			blackjack = checkBlackjack(playerCards);
+			if (blackjack == true) {
+				sumPlayer = sumPlayerCards(playerCards);
+				stand();
+			}
+		}
+		console.log(playerObjects);
 		sumPlayer = sumPlayerCards(playerCards);
 		console.log(playerCards);
 		gameSpace.innerHTML = `<p>Your Cards are ${playerCards}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
@@ -209,7 +229,7 @@ function blackjack(_cardsImages) {
 			money -= betAmount;
 			hideDealerCards();
 			dealerCardsDiv.delay(500).fadeIn(300);
-			gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
+			gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(. </p> <p> You got ${sumPlayer} and the Dealer got ${sumDealerCards}.</p> <p> Dealer's Cards were ${dealerCards}.</p> <p> You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
 			totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 			hitcheck = false;
 			standCheck = true;
@@ -227,19 +247,19 @@ function blackjack(_cardsImages) {
 					display: "none",
 				})
 				.html(
-					`<p>You 'Bust' with ${prevSum}. You change your Ace from an 11 to a 1. Your new number is ${sumPlayer}</p>`
+					`<p>You 'Bust' with ${prevSum}. You change your Ace from an 11 to a 1.</p> <p> Your new number is ${sumPlayer}</p>`
 				)
 				.fadeIn(800)
 				.delay(6000)
 				.fadeOut(1200);
-			gameSpace.innerHTML = `<p>Your Cards are ${playerCards}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. Your bet is $${betAmount}. Please press the HIT ME button to give you a card. Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
+			gameSpace.innerHTML = `<p>Your Cards are ${playerCards}. You Have ${sumPlayer}. Dealer's First Card is ${dealerCards[0]}. </p> <p> Your bet is $${betAmount}.</p> <p> Please press the HIT ME button to give you a card.</p> <p> Press the STAND button to 'stand'. Press the QUIT button to quit.</p>`;
 
 			//If the player's sum of cards is higher than 21, then he/she looses
 			if (sumPlayer > 21) {
 				money -= betAmount;
 				gameInfo = ``;
 				dealerCardsDiv.delay(500).fadeIn(300);
-				gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
+				gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(.</p> <p> You got ${sumPlayer} and the Dealer got ${sumDealerCards}.</p> <p> Dealer's Cards were ${dealerCards}.</p> <p> You LOSE $${betAmount}. Now your total amount of money is $${money}</p>`;
 				totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				hitcheck = false;
 				standCheck = true;
@@ -321,13 +341,13 @@ function blackjack(_cardsImages) {
 					money += blackjackWinings;
 					hideDealerCards();
 					dealerCardsDiv.delay(500).fadeIn(300);
-					gameSpace.innerHTML = `<p> CONGRATULATIONS YOU GOT BLACKJACK AND THE DEALER DIDN'T!!!!! YOU WIN!!!!!.  Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${blackjackWinings}. Now your total amount of money is $${money} </p>`;
-					totalMoney.innerHTML = `Your Total Money is: $${money}`;
+					gameSpace.innerHTML = `<p> CONGRATULATIONS YOU GOT BLACKJACK AND THE DEALER DIDN'T!!!!! YOU WIN!!!!!. </p> <p> Your cards were ${playerCards}. Dealer's Cards were ${dealerCards}. </p> <p> You got 21 and the Dealer got ${sumDealerCards}.</p> <p>  You WIN $${blackjackWinings}. Now your total amount of money is $${money} </p>`;
+					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				} else {
 					hideDealerCards();
 					dealerCardsDiv.delay(500).fadeIn(300);
-					gameSpace.innerHTML = `<p> Both YOU and the DEALER got <strong>BLACKJACK</strong>. You don't lose any money. Your total amount of money continue being $${money} </p>`;
-					totalMoney.innerHTML = `Your Total Money is: $${money}`;
+					gameSpace.innerHTML = `<p> Both YOU and the DEALER got <strong>BLACKJACK</strong>.</p> <p> You don't lose any money. Your total amount of money continue being $${money} </p>`;
+					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				}
 			} else {
 				blackjack = checkBlackjack(dealerCards);
@@ -335,8 +355,8 @@ function blackjack(_cardsImages) {
 					money -= betAmount;
 					hideDealerCards();
 					dealerCardsDiv.delay(500).fadeIn(300);
-					gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :( . The Dealer got <strong> BLACKJACK </strong>. Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
-					totalMoney.innerHTML = `Your Total Money is: $${money}`;
+					gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(</p> <p>The Dealer got <strong> BLACKJACK </strong>.</p> <p> Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}.</p> <p> You got ${sumPlayer} and the Dealer got 21. </p> <p> You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
+					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				} else {
 					if (dealerCards[1] == 1 && dealerAces.length < 1) {
 						dealerCards[1] = 11;
@@ -360,16 +380,16 @@ function blackjack(_cardsImages) {
 						money += betAmount;
 						hideDealerCards();
 						dealerCardsDiv.delay(500).fadeIn(300);
-						gameSpace.innerHTML = `<p> CONGRATULATIONS!!!!! YOU WIN!!!!!. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You WIN $${betAmount}. Now your total amount of money is $${money} </p>`;
-						totalMoney.innerHTML = `Your Total Money is: $${money}`;
+						gameSpace.innerHTML = `<p> CONGRATULATIONS!!!!! YOU WIN!!!!!</p> <p> You got ${sumPlayer} and the Dealer got ${sumDealerCards}.</p> <p> Your Cards were ${playerCards}. Dealer's Cards were ${dealerCards}.</p> <p> You WIN $${betAmount}. Now your total amount of money is $${money} </p>`;
+						totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 					}
 					// else, the player looses
 					else {
 						money -= betAmount;
 						hideDealerCards();
 						dealerCardsDiv.delay(500).fadeIn(300);
-						gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :(. You got ${sumPlayer} and the Dealer got ${sumDealerCards}. Dealer's Cards were ${dealerCards}. You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
-						totalMoney.innerHTML = `Your Total Money is: $${money}`;
+						gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :( </p> <p> You got ${sumPlayer} and the Dealer got ${sumDealerCards}.</p> <p> Your Cards were ${playerCards}. Dealer's Cards were ${dealerCards}.</p> <p> You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
+						totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 					}
 				}
 			}
@@ -390,24 +410,53 @@ function blackjack(_cardsImages) {
 	}
 	//when the player quits, it saves it's highscore (if any)
 	function quitFinal() {
-		hitcheck = false;
-		standCheck = true;
-		betcheck = false;
+		$(`#standButton`).prop("disabled", true);
+		$(`#betButton`).prop("disabled", true);
+		$(`#quitButton`).prop("disabled", true);
+		$(`#resetButton`).prop("disabled", true);
+		$(`#hitmeButton`).prop("disabled", true);
 		playerCardsDiv.fadeOut(400);
 		dealerCardsDiv.fadeOut(400);
-		totalMoney.innerHTML = `<p> Your final money is $${money}. You started with $${initialMoney}. Thanks for playing :D. Have a nice day </p>`;
-		if (isNaN(parseFloat(localStorage.getItem(`score`))) === true) {
-			localStorage.setItem(`score`, money);
-			totalMoney.innerHTML = `<p> Your final money is $${money}. You started with $${initialMoney}. CONGRATULATIONS. YOU HAVE A NEW HIGHSCORE OF $${money}. Thanks for playing :D. Have a nice day </p>`;
-		} else if (parseFloat(localStorage.getItem(`score`)) < money) {
-			localStorage.setItem(`score`, money);
-			totalMoney.innerHTML = `<p> Your final money is $${money}. You started with $${initialMoney}. CONGRATULATIONS. YOU HAVE A NEW HIGHSCORE OF $${money}. Thanks for playing :D. Have a nice day </p>`;
-		} else {
-			totalMoney.innerHTML = `<p> Your final money is $${money}. You started with $${initialMoney}. Thanks for playing :D. Have a nice day </p>`;
+		score(showScore);
+	}
+	function score(callback) {
+		totalMoney.innerHTML = `<p>Please enter your name to save your <strong>SCORE</strong></p> <input type="text" id="nameText" placeholder="Please Enter Your Name" /> <button class="btn btn-primary" id="scoreButton">SAVE SCORE</button>`;
+		let nameText = document.getElementById(`nameText`);
+		let scoreButton = document.getElementById(`scoreButton`);
+		scoreButton.addEventListener(`click`, saveScore);
+		function saveScore() {
+			console.log(nameText.value);
+			localStorage.setItem(`${nameText.value}`, money);
+			callback();
 		}
+	}
+	function showScore() {
+		$(`#standButton`).prop("disabled", false);
+		$(`#betButton`).prop("disabled", false);
+		$(`#quitButton`).prop("disabled", false);
+		$(`#resetButton`).prop("disabled", false);
+		$(`#hitmeButton`).prop("disabled", false);
+		let localObjects = [];
+		totalMoney.innerHTML = `<p> PLAYER SCORES </p>`;
+		for (let i = 0; i < localStorage.length; i++) {
+			localObjects.push({
+				key: localStorage.key(i),
+				value: parseFloat(localStorage.getItem(localStorage.key(i))),
+			});
+		}
+		localObjects.sort((a, b) => b.value - a.value);
+		for (object of localObjects) {
+			let p = document.createElement("p");
+			p.innerHTML = `${object.key} --- ${object.value} `;
+			totalMoney.appendChild(p);
+		}
+		let p = document.createElement("p");
+		p.innerHTML = `--------------------------- </br>`;
+		totalMoney.appendChild(p);
 		money = 10000;
 		gameSpace.innerHTML = `<p> You Start Again with $${money} to spend </p>`;
 	}
+
 	//Shows the rules when the RULES button is pressed.
 	function rules() {
 		$("#rulesText").slideToggle();
@@ -451,12 +500,12 @@ function blackjack(_cardsImages) {
 			display: "none",
 		})
 		.html(
-			`<p> Welcome to a game of simplified blackjack, where you can't split or double down. You play with 8 decks. </p> <p> The objective of the game is to get closer to 21 than the dealer. If you win the house pays 1:1. If you get an ACE and a 10 as your first 2 cards, you win 1.5*Bet. If both you and the dealer gets blackjack you don't lose any money. If the dealer gets blackjack and you don't, you lose your bet. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`
+			`<p> Welcome to a game of simplified blackjack, where you can't split or double down. You play with 8 decks. </p> <p> The objective of the game is to get closer to 21 than the dealer. </p> <p> If you win the house pays 1:1. If you get an ACE and a 10 as your first 2 cards, you win 1.5*Bet. </p> <p> If both you and the dealer gets blackjack you don't lose any money. If the dealer gets blackjack and you don't, you lose your bet.</p> <p> To do so, first place a bet in the Bet field and press the BET button. </p> <p> Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. </p> <p> Press the RESET button to start again and press the QUIT button to save your score and start again.</p>`
 		);
 	betText.value = "";
 	gameInfo.innerHTML = ``;
 	totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
-	gameSpace.innerHTML = `<p> The objective of the game is to get closer to 21 than the dealer. To do so, first place a bet in the Bet field and press the BET button. Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing. Press the RESET button to start again and press the QUIT button to save your highscore and start again.</p>`;
+	gameSpace.innerHTML = `<p> The objective of the game is to get closer to 21 than the dealer. </p> <p> To do so, first place a bet in the Bet field and press the BET button. </p> <p> Afterwards, press the HIT ME button until you are close enough to 21, and then press the STAND button so the Dealer starts playing.</p> <p> Press the RESET button to start again and press the QUIT button to save your score and start again.</p>`;
 	console.log(cardsDecks);
 }
 //First I need to get the data from the .json file and then call blackjack
