@@ -362,7 +362,7 @@ function blackjack(_cardsImages) {
 					hideDealerCards();
 					dealerCardsDiv.delay(500).fadeIn(300);
 					gameSpace.innerHTML = `<p> Both YOU and the DEALER got <strong>BLACKJACK</strong>.</p> <p> You don't lose any money. Your total amount of money continue being $${money} </p>`;
-					totalMoney.innerHTML = `Your Total Money is: $${money}`;
+					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				}
 			} else {
 				blackjack = checkBlackjack(dealerCards);
@@ -371,7 +371,7 @@ function blackjack(_cardsImages) {
 					hideDealerCards();
 					dealerCardsDiv.delay(500).fadeIn(300);
 					gameSpace.innerHTML = `<p> YOU LOSE THIS TIME :(</p> <p>The Dealer got <strong> BLACKJACK </strong>.</p> <p> Dealer's Cards were ${dealerCards}. Your cards were ${playerCards}.</p> <p> You got ${sumPlayer} and the Dealer got 21. </p> <p> You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
-					totalMoney.innerHTML = `Your Total Money is: $${money}`;
+					totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 				} else {
 					if (dealerCards[1] == 1 && dealerAces.length < 1) {
 						dealerCards[1] = 11;
@@ -395,7 +395,7 @@ function blackjack(_cardsImages) {
 						hideDealerCards();
 						dealerCardsDiv.delay(500).fadeIn(300);
 						gameSpace.innerHTML = `<p> CONGRATULATIONS!!!!! YOU WIN!!!!!</p> <p> You got ${sumPlayer} and the Dealer got ${sumDealerCards}.</p> <p> Your Cards were ${playerCards}. Dealer's Cards were ${dealerCards}.</p> <p> You WIN $${betAmount}. Now your total amount of money is $${money} </p>`;
-						totalMoney.innerHTML = `Your Total Money is: $${money}`;
+						totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 					}
 					// else, the player looses
 					else {
@@ -403,7 +403,7 @@ function blackjack(_cardsImages) {
 						hideDealerCards();
 						dealerCardsDiv.delay(500).fadeIn(300);
 						gameSpace.innerHTML = `<p>YOU LOSE THIS TIME :( </p> <p> You got ${sumPlayer} and the Dealer got ${sumDealerCards}.</p> <p> Your Cards were ${playerCards}. Dealer's Cards were ${dealerCards}.</p> <p> You LOSE $${betAmount}. Now your total amount of money is $${money} </p>`;
-						totalMoney.innerHTML = `Your Total Money is: $${money}`;
+						totalMoney.innerHTML = `<p>Your Total Money is: $${money}</p>`;
 					}
 				}
 			}
