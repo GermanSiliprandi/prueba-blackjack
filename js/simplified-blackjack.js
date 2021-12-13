@@ -176,7 +176,7 @@ function blackjack(_cardsImages) {
 			gameSpace.innerHTML = `<p>You first need to place a bet in the Bet field and then press the BET button.</p>`;
 		}
 	}
-	//Callback of the playerAce function. Checks if the player and the dealer got blackjack. shows the player cards. Checks if the player loses.
+	//Callback of the playerAce function. Checks if the player and the dealer got blackjack (if blackjack==true, then stand()). shows the player cards. Checks if the player loses.
 	function hitMeContinue(currentCard) {
 		$(`#standButton`).prop("disabled", false);
 		$(`#betButton`).prop("disabled", false);
@@ -315,6 +315,7 @@ function blackjack(_cardsImages) {
 					dealerCards.includes(10)
 			);
 			console.log(`Dealer Cards Are:${dealerCards}`);
+			//checks for player and dealer's blackjack
 			if (blackjack == true) {
 				blackjack = checkBlackjack(dealerCards);
 				if (blackjack == false) {
@@ -350,12 +351,11 @@ function blackjack(_cardsImages) {
 						sumDealerCards = sumDealer();
 					}
 
-					// If the dealer busts (gets more than 21) or the player sum of the cards is lower than 21 but it's higher than the Dealer's, then the player wins
-
 					/*IA where the dealer MUST draw cards until a value of 17 and then stands*/
 					while (sumDealerCards < 17 && sumDealerCards < sumPlayer) {
 						dealerCard();
 					}
+					//If the dealer BUST OR THE PLAYER IS CLOSER TO 21 THAN THE DEALER THEN THE PLAYER WINS
 					if (sumDealerCards > 21 || sumPlayer > sumDealerCards) {
 						money += betAmount;
 						hideDealerCards();
